@@ -1,4 +1,23 @@
+const { sendLowStockEmail } = require('../services/emailService');
+const { sendLowStockAlert } = require('../services/telegramService');
 const InventoryItem = require('../models/InventoryItem');
+
+const checkAndNotify = async (item) => {
+    if (item.quantity <= item.lowStockThreshold) {
+        const populatedItem = await InventoryItem.findById(item._id).populate(
+            'category',
+            'name'
+        );
+        try {
+            await Promise.all([
+                sendLowStockEmail([populatedItem]),
+                sendLowStockAlert([populatedItem]),
+            ]);
+        } catch (err) {
+            console.error('Notification error:', err.message);
+        }
+    }
+};
 
 // @route GET /api/inventory
 const getItems = async (req, res) => {
@@ -75,6 +94,7 @@ const createItem = async (req, res) => {
             addedBy: req.user._id,
         });
 
+        await checkAndNotify(item);
         res.status(201).json(item);
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
@@ -93,7 +113,8 @@ const updateItem = async (req, res) => {
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
         }
-
+        
+        await checkAndNotify(item);
         res.json(item);
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
