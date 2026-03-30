@@ -4,6 +4,8 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 const passport = require('./config/passport');
 const authRoutes = require('./routes/auth');
+const categoryRoutes = require('./routes/category');
+const inventoryRoutes = require('./routes/inventory');
 
 const app = express();
 
@@ -14,6 +16,8 @@ app.use(express.json());
 app.use(passport.initialize());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'PantryPro API is running' });
