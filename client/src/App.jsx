@@ -7,6 +7,10 @@ import AuthSuccess from './pages/AuthSuccess';
 import Inventory from './pages/Inventory';
 import ItemForm from './pages/ItemForm';
 import Categories from './pages/Categories';
+import Dashboard from './pages/Dashboard';
+
+// inside <Routes> add:
+
 
 const App = () => {
     return (
@@ -21,6 +25,7 @@ const App = () => {
                     <Route path="/inventory/edit/:id" element={<ProtectedRoute><ItemForm /></ProtectedRoute>} />
                     <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="/login" />} />
+                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

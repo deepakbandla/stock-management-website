@@ -136,6 +136,80 @@ const deleteItem = async (req, res) => {
     }
 };
 
+// @route GET /api/inventory/dashboard
+const getDashboardStats = async (req, res) => {
+    try {
+        const totalItems = await InventoryItem.countDocuments();
+
+        const lowStockItems = await InventoryItem.find({
+            $expr: { $lte: ['$quantity', '$lowStockThreshold'] },
+        }).populate('category', 'name');
+
+        const today = new Date();
+        const sevenDaysFromNow = new Date();
+        sevenDaysFromNow.setDate(today.getDate() + 7);
+
+        const expiringItems = await InventoryItem.find({
+            expiryDate: { $gte: today, $lte: sevenDaysFromNow },
+        }).populate('category', 'name');
+
+        const expiredItems = await InventoryItem.find({
+            expiryDate: { $lt: today },
+        }).populate('category', 'name');
+
+        const categoryBreakdown = await InventoryItem.aggregate([
+            {
+                $group: {
+                    _id: '$category',
+                    count: { $sum: 1 },
+                    totalQuantity: { $sum: '$quantity' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'categoryData',
+                },
+            },
+            {
+                $project: {
+                    name: {
+                        $cond: {
+                            if: { $gt: [{ $size: '$categoryData' }, 0] },
+                            then: { $arrayElemAt: ['$categoryData.name', 0] },
+                            else: 'Uncategorised',
+                        },
+                    },
+                    count: 1,
+                    totalQuantity: 1,
+                },
+            },
+        ]);
+
+        const recentItems = await InventoryItem.find()
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .populate('category', 'name');
+
+        res.json({
+            totalItems,
+            lowStockCount: lowStockItems.length,
+            expiringCount: expiringItems.length,
+            expiredCount: expiredItems.length,
+            lowStockItems,
+            expiringItems,
+            expiredItems,
+            categoryBreakdown,
+            recentItems,
+        });
+    } catch (err) {
+        console.error('Dashboard error:', err);
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 module.exports = {
     getItems,
     getLowStockItems,
@@ -143,4 +217,5 @@ module.exports = {
     createItem,
     updateItem,
     deleteItem,
+    getDashboardStats,
 };

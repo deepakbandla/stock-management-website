@@ -8,7 +8,11 @@ const {
     createItem,
     updateItem,
     deleteItem,
+    getDashboardStats, 
 } = require('../controllers/inventory');
+
+// add this route at the top with the other GETs
+router.get('/dashboard', protect, getDashboardStats);
 
 router.get('/low-stock', protect, getLowStockItems);
 router.get('/', protect, getItems);
