@@ -249,12 +249,6 @@ Visit `http://localhost:5173`
 
 ---
 
-## Screenshots
-
-> Add screenshots of your app here
-
----
-
 ## Author
 
 **Deepak Bandla**  
