@@ -24,4 +24,16 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ message: 'Route not found' });
+});
+
+// global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal server error',
+    });
+});
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
