@@ -8,6 +8,7 @@ import Inventory from './pages/Inventory';
 import ItemForm from './pages/ItemForm';
 import Categories from './pages/Categories';
 import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
 
 // inside <Routes> add:
 
@@ -26,6 +27,7 @@ const App = () => {
                     <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="/login" />} />
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

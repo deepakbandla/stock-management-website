@@ -39,8 +39,20 @@ const ItemForm = () => {
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+    const validate = () => {
+        if (!form.name.trim()) return 'Item name is required';
+        if (form.quantity === '' || form.quantity < 0) return 'Quantity must be 0 or more';
+        if (form.lowStockThreshold < 0) return 'Threshold cannot be negative';
+        return null;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const validationError = validate();
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
         setLoading(true);
         setError('');
         try {

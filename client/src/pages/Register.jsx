@@ -17,6 +17,9 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!form.name.trim()) { setError('Name is required'); return; }
+        if (!form.email) { setError('Email is required'); return; }
+        if (form.password.length < 6) { setError('Password must be at least 6 characters'); return; }
         setLoading(true);
         setError('');
         try {
