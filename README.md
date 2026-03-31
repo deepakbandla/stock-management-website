@@ -2,7 +2,7 @@
 
 A full-stack inventory management web application built for small businesses to track stock levels, manage categories, and receive automated low-stock alerts via Gmail and Telegram.
 
-🔗 **Live Demo**: [your-vercel-url.vercel.app](https://stock-management-website-frontend.vercel.app/)  
+🔗 **Live Demo**: [stock-management-website-frontend.vercel.app](https://stock-management-website-frontend.vercel.app/)  
 📦 **Repository**: [github.com/deepakbandla/stock-management-website](https://github.com/deepakbandla/stock-management-website)
 
 ---
