@@ -10,8 +10,6 @@ import Categories from './pages/Categories';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 
-// inside <Routes> add:
-
 
 const App = () => {
     return (
