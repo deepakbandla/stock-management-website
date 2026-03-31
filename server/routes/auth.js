@@ -3,17 +3,17 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const { register, login } = require('../controllers/auth');
+const validate = require('../middleware/validate');
+const { registerValidator, loginValidator } = require('../middleware/validators');
 
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', registerValidator, validate, register);
+router.post('/login', loginValidator, validate, login);
 
-// Google OAuth — step 1: redirect to Google
 router.get(
     '/google',
     passport.authenticate('google', { scope: ['profile', 'email'], session: false })
 );
 
-// Google OAuth — step 2: Google redirects back here
 router.get(
     '/google/callback',
     passport.authenticate('google', { failureRedirect: '/login', session: false }),
