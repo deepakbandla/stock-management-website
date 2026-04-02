@@ -210,6 +210,87 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
+// @route POST /api/inventory/bulk-update
+const bulkUpdateItems = async (req, res) => {
+    try {
+        const { updates } = req.body;
+
+        if (!updates || !Array.isArray(updates) || updates.length === 0) {
+            return res.status(400).json({ message: 'No updates provided' });
+        }
+
+        const results = {
+            success: [],
+            lowStock: [],
+            depleted: [],
+            errors: [],
+        };
+
+        for (const update of updates) {
+            try {
+                const { itemId, usageAmount } = update;
+
+                if (!itemId || usageAmount === undefined || usageAmount < 0) {
+                    results.errors.push({ itemId, message: 'Invalid item ID or usage amount' });
+                    continue;
+                }
+
+                const item = await InventoryItem.findById(itemId).populate('category', 'name');
+
+                if (!item) {
+                    results.errors.push({ itemId, message: 'Item not found' });
+                    continue;
+                }
+
+                const previousQuantity = item.quantity;
+                const newQuantity = Math.max(0, item.quantity - usageAmount);
+                item.quantity = newQuantity;
+                await item.save();
+
+                const resultItem = {
+                    _id: item._id,
+                    name: item.name,
+                    unit: item.unit,
+                    category: item.category?.name || 'Uncategorised',
+                    previousQuantity,
+                    usageAmount,
+                    newQuantity,
+                };
+
+                if (newQuantity === 0) {
+                    results.depleted.push(resultItem);
+                    try {
+                        await Promise.all([
+                            sendLowStockEmail([item]),
+                            sendLowStockAlert([item]),
+                        ]);
+                    } catch (notifErr) {
+                        console.error('Notification error:', notifErr.message);
+                    }
+                } else if (newQuantity <= item.lowStockThreshold) {
+                    results.lowStock.push(resultItem);
+                    try {
+                        await Promise.all([
+                            sendLowStockEmail([item]),
+                            sendLowStockAlert([item]),
+                        ]);
+                    } catch (notifErr) {
+                        console.error('Notification error:', notifErr.message);
+                    }
+                } else {
+                    results.success.push(resultItem);
+                }
+            } catch (itemErr) {
+                results.errors.push({ itemId: update.itemId, message: itemErr.message });
+            }
+        }
+
+        res.json({ message: 'Bulk update complete', results });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 module.exports = {
     getItems,
     getLowStockItems,
@@ -218,4 +299,5 @@ module.exports = {
     updateItem,
     deleteItem,
     getDashboardStats,
+    bulkUpdateItems,
 };

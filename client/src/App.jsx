@@ -9,6 +9,8 @@ import ItemForm from './pages/ItemForm';
 import Categories from './pages/Categories';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
+import QuickUpdate from './pages/QuickUpdate';
+
 
 
 const App = () => {
@@ -26,6 +28,7 @@ const App = () => {
                     <Route path="*" element={<Navigate to="/login" />} />
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="*" element={<NotFound />} />
+                    <Route path="/quick-update" element={<ProtectedRoute><QuickUpdate /></ProtectedRoute>} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

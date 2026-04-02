@@ -1,10 +1,13 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Package, Tag, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, Tag, LogOut, Zap } from 'lucide-react';
+
 import { cn } from '../lib/utils';
+
 
 const navLinks = [
     { to: '/inventory', label: 'Inventory', icon: Package },
+    { to: '/quick-update', label: 'Quick Update', icon: Zap },
     { to: '/categories', label: 'Categories', icon: Tag },
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
 ];

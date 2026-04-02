@@ -11,12 +11,14 @@ const {
     updateItem,
     deleteItem,
     getDashboardStats,
+    bulkUpdateItems,
 } = require('../controllers/inventory');
 
 router.get('/dashboard', protect, getDashboardStats);
 router.get('/low-stock', protect, getLowStockItems);
 router.get('/', protect, getItems);
 router.get('/:id', protect, getItemById);
+router.post('/bulk-update', protect, bulkUpdateItems);
 router.post('/', protect, itemValidator, validate, createItem);
 router.put('/:id', protect, itemValidator, validate, updateItem);
 router.delete('/:id', protect, deleteItem);
