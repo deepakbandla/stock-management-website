@@ -85,11 +85,11 @@ const createItem = async (req, res) => {
 
         const item = await InventoryItem.create({
             name,
-            category,
+            category: category || undefined,
             quantity,
             unit,
             lowStockThreshold,
-            expiryDate,
+            expiryDate: expiryDate || undefined,
             notes,
             addedBy: req.user._id,
         });
@@ -97,6 +97,7 @@ const createItem = async (req, res) => {
         await checkAndNotify(item);
         res.status(201).json(item);
     } catch (err) {
+        console.error('Create item error:', err.message);
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
@@ -104,19 +105,24 @@ const createItem = async (req, res) => {
 // @route PUT /api/inventory/:id
 const updateItem = async (req, res) => {
     try {
+        const body = { ...req.body };
+        if (body.category === '') body.category = undefined;
+        if (body.expiryDate === '') body.expiryDate = undefined;
+
         const item = await InventoryItem.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            body,
             { new: true }
         );
 
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
         }
-        
+
         await checkAndNotify(item);
         res.json(item);
     } catch (err) {
+        console.error('Update item error:', err.message);
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
