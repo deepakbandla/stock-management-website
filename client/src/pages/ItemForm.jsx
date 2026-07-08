@@ -56,10 +56,20 @@ const ItemForm = () => {
         setLoading(true);
         setError('');
         try {
+            const payload = {
+                name: form.name,
+                quantity: form.quantity,
+                unit: form.unit,
+                lowStockThreshold: form.lowStockThreshold,
+                notes: form.notes,
+                ...(form.category && { category: form.category }),
+                ...(form.expiryDate && { expiryDate: form.expiryDate }),
+            };
+
             if (isEdit) {
-                await api.put(`/inventory/${id}`, form);
+                await api.put(`/inventory/${id}`, payload);
             } else {
-                await api.post('/inventory', form);
+                await api.post('/inventory', payload);
             }
             navigate('/inventory');
         } catch (err) {

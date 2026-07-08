@@ -10,7 +10,7 @@ import Categories from './pages/Categories';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import QuickUpdate from './pages/QuickUpdate';
-
+import ChatAssistant from './components/ChatAssistant';
 
 
 const App = () => {
@@ -30,6 +30,7 @@ const App = () => {
                     <Route path="*" element={<NotFound />} />
                     <Route path="/quick-update" element={<ProtectedRoute><QuickUpdate /></ProtectedRoute>} />
                 </Routes>
+                <ChatAssistant />
             </AuthProvider>
         </BrowserRouter>
     );
